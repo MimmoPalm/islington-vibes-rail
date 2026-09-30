@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Islington Vibes · The Rail</title>
+  <meta name="theme-color" content="#F3ECE5">
+
+  <!-- first six garments on the rail -->
+  <link rel="preload" href="assets/img/the-73-premium-tee.webp" as="image">
+  <link rel="preload" href="assets/img/the-newington-green-cap.webp" as="image">
+  <link rel="preload" href="assets/img/north-london-club-hoodie.webp" as="image">
+  <link rel="preload" href="assets/img/n1-corduroy-cap.webp" as="image">
+  <link rel="preload" href="assets/img/north-london-club-hat.webp" as="image">
+  <link rel="preload" href="assets/img/the-hornsey-road-baths-laundry-jumper.webp" as="image">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="masthead" id="masthead">
+    <img class="wordmark" src="assets/Islington.png" width="2000" height="575" alt="Islington Vibes">
+  </header>
+
+  <main class="rail" id="rail">
+    <div class="rail-wrap">
+      <div class="rail-line" aria-hidden="true"></div>
+      <ul class="rail-track" id="track" aria-label="The collection"></ul>
+    </div>
+
+    <div class="rail-caption" aria-hidden="true">
+      <p class="label rail-count" id="count"></p>
+      <p class="rail-now">
+        <span class="rail-now-title" id="now-title"></span>
+        <span class="rail-now-price" id="now-price"></span>
+      </p>
+      <p class="label rail-hint" id="hint">
+        <svg viewBox="0 0 44 8" width="44" height="8" aria-hidden="true"><path d="M4 1 1 4l3 3M1 4h42M40 1l3 3-3 3"/></svg>
+        Drag
+      </p>
+    </div>
+
+    <noscript>
+      <p class="noscript">The rail needs JavaScript. The collection is at <a href="https://islingtonvibes.com">islingtonvibes.com</a>.</p>
+    </noscript>
+  </main>
+
+  <footer class="colophon" id="colophon">
+    <p class="label label-wide">I S L I N G T O N &nbsp; V I B E S &nbsp; · &nbsp; N 1 6</p>
+    <p class="colophon-line">5% of profits go to Islington Giving</p>
+  </footer>
+
+  <section class="product" id="product" aria-labelledby="p-title" hidden>
+    <div class="product-field" id="p-field"></div>
+
+    <div class="product-bar">
+      <button class="back" id="p-back" type="button">
+        <svg viewBox="0 0 28 8" width="28" height="8" aria-hidden="true"><path d="M4 1 1 4l3 3M1 4h26"/></svg>
+        <span class="label">Back</span>
+      </button>
+      <img class="wordmark wordmark-small" src="assets/Islington.png" width="2000" height="575" alt="Islington Vibes">
+    </div>
+
+    <div class="product-body">
+      <div class="product-stage">
+        <img class="product-img" id="p-img" alt="" draggable="false">
+      </div>
+
+      <div class="product-info" id="p-info">
+        <p class="label" id="p-type"></p>
+        <h1 class="product-title" id="p-title"></h1>
+        <p class="product-price" id="p-price"></p>
+        <p class="product-desc" id="p-desc"></p>
+        <div class="chips-group" id="p-sizes-group">
+          <p class="label">Size</p>
+          <ul class="chips" id="p-sizes"></ul>
+        </div>
+        <div class="chips-group" id="p-colours-group">
+          <p class="label">Colour</p>
+          <ul class="chips chips-colour" id="p-colours"></ul>
+        </div>
+        <a class="pill" id="p-shop" target="_blank" rel="noopener">Shop</a>
+      </div>
+    </div>
+  </section>
+
+  <script src="assets/data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
