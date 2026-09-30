@@ -335,8 +335,17 @@
     }
 
     quiet = energy ? 0 : quiet + 1;
-    if (quiet > 8) { running = false; return; }
+    if (quiet > 8) { running = false; settleOnCentre(); return; }
     requestAnimationFrame(tick);
+  }
+
+  // when the rail comes to rest, the piece in the middle sits dead-centre
+  function settleOnCentre() {
+    if (drag || glide || pinned) return;
+    var s = nearest();
+    var c = s.li.offsetLeft + s.li.offsetWidth / 2;
+    var want = Math.max(0, Math.min(track.scrollWidth - track.clientWidth, c - track.clientWidth / 2));
+    if (Math.abs(want - track.scrollLeft) > 6) centre(s, true);
   }
 
   function rest(s) {
