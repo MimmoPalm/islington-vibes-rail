@@ -129,7 +129,7 @@
       // pendulum: longer, heavier pieces swing slower
       k: 52 - 16 * kind.w * (dim[1] / dim[0]) + (i % 3) * 2,
       c: 3.4 + (i % 4) * 0.15,
-      angle: 0, vel: 0
+      angle: 0, vel: 0, turn: 0
     };
   });
 
@@ -165,15 +165,16 @@
 
   slots.forEach(function (s) {
     s.a.addEventListener('pointerenter', function (e) {
-      if (e.pointerType === 'mouse') { pinned = s; refreshCaption(); }
+      if (e.pointerType === 'mouse') { pinned = s; applyTurns(); refreshCaption(); }
     });
-    s.a.addEventListener('pointerleave', function () { pinned = null; refreshCaption(); });
+    s.a.addEventListener('pointerleave', function () { pinned = null; applyTurns(); refreshCaption(); });
     s.a.addEventListener('focus', function () {
       pinned = s;
+      applyTurns();
       refreshCaption();
       if (s.a.matches(':focus-visible')) centre(s, true);
     });
-    s.a.addEventListener('blur', function () { pinned = null; refreshCaption(); });
+    s.a.addEventListener('blur', function () { pinned = null; applyTurns(); refreshCaption(); });
   });
 
   /* ---------- moving the rail ---------- */
@@ -257,6 +258,31 @@
 
   /* ---------- weight: the garments swing as the rail moves ---------- */
 
+  /* the rack turn: a piece comes round to face you as it reaches the middle,
+     and stands at an angle the further out it sits — like clothes on a rack. */
+  var TURN_MAX = 58;        // degrees at the outer edge of the rail
+  var TURN_SPAN = 1.12;     // how far off centre a piece must be for full turn
+
+  function paint(s) {
+    s.hang.style.transform = 'perspective(1700px) rotate(' + s.angle.toFixed(3) +
+      'deg) rotateY(' + s.turn.toFixed(2) + 'deg)';
+    s.a.style.opacity = (1 - 0.42 * Math.abs(s.turn) / TURN_MAX).toFixed(3);
+  }
+
+  function applyTurns() {
+    var half = Math.max(1, track.clientWidth / 2);
+    // the piece in the middle faces you dead-on; the rest fan out from it
+    var anchor = pinned || nearest();
+    var ac = anchor.li.offsetLeft + anchor.li.offsetWidth / 2;
+    for (var i = 0; i < slots.length; i++) {
+      var s = slots[i];
+      var c = s.li.offsetLeft + s.li.offsetWidth / 2;
+      var t = Math.max(-1, Math.min(1, ((c - ac) / half) / TURN_SPAN));
+      s.turn = t * TURN_MAX;
+      if (!s.angle && !s.vel) paint(s);
+    }
+  }
+
   var running = false, lastT = 0, lastLeft = 0, lastV = 0, quiet = 0;
 
   function wake() {
@@ -302,7 +328,7 @@
       if (Math.abs(s.angle) > 0.015 || Math.abs(s.vel) > 0.05) {
         energy = 1;
         s.hang.classList.add('is-swinging');
-        s.hang.style.transform = 'rotate(' + s.angle.toFixed(3) + 'deg)';
+        paint(s);
       } else if (s.angle || s.vel) {
         rest(s);
       }
@@ -316,19 +342,20 @@
   function rest(s) {
     s.angle = 0;
     s.vel = 0;
-    s.hang.style.transform = '';
+    paint(s);
     s.hang.classList.remove('is-swinging');
   }
 
   var captionQueued = false;
   track.addEventListener('scroll', function () {
     wake();
+    applyTurns();
     if (captionQueued) return;
     captionQueued = true;
     requestAnimationFrame(function () { captionQueued = false; refreshCaption(); });
   }, { passive: true });
   track.addEventListener('touchstart', used, { passive: true });
-  window.addEventListener('resize', refreshCaption);
+  window.addEventListener('resize', function () { applyTurns(); refreshCaption(); });
 
   /* ---------- product page ---------- */
 
@@ -397,6 +424,10 @@
     rest(s);
     fill(s.p);
 
+    // the morph measures the flat box, so bring the piece face-on first
+    s.turn = 0;
+    paint(s);
+
     view.hidden = false;
     view.scrollTop = 0;
     document.body.classList.add('is-product');
@@ -437,6 +468,7 @@
       s.img.style.visibility = '';
       s.a.focus({ preventScroll: true });
       pinned = null;
+      applyTurns();
       refreshCaption();
     };
 
@@ -496,6 +528,7 @@
 
   /* ---------- start ---------- */
 
+  applyTurns();
   refreshCaption();
 
   var initial = handleFromHash();
