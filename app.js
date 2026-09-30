@@ -129,6 +129,7 @@
       // pendulum: longer, heavier pieces swing slower
       k: 52 - 16 * kind.w * (dim[1] / dim[0]) + (i % 3) * 2,
       c: 3.4 + (i % 4) * 0.15,
+      u: (li.offsetWidth / kind.w) || 200,   // one tee-width, for the turn ramp
       angle: 0, vel: 0, turn: 0
     };
   });
@@ -261,7 +262,7 @@
   /* the rack turn: a piece comes round to face you as it reaches the middle,
      and stands at an angle the further out it sits — like clothes on a rack. */
   var TURN_MAX = 58;        // degrees at the outer edge of the rail
-  var TURN_SPAN = 1.12;     // how far off centre a piece must be for full turn
+  var TURN_SPAN = 1.35;     // garment widths from centre for a full turn
 
   function paint(s) {
     s.hang.style.transform = 'perspective(1700px) rotate(' + s.angle.toFixed(3) +
@@ -270,14 +271,15 @@
   }
 
   function applyTurns() {
-    var half = Math.max(1, track.clientWidth / 2);
-    // the piece in the middle faces you dead-on; the rest fan out from it
+    // the piece in the middle faces you dead-on; the rest fan out from it,
+    // turning in proportion to how far along the rail they sit
     var anchor = pinned || nearest();
     var ac = anchor.li.offsetLeft + anchor.li.offsetWidth / 2;
+    var span = Math.max(60, anchor.u * TURN_SPAN);
     for (var i = 0; i < slots.length; i++) {
       var s = slots[i];
       var c = s.li.offsetLeft + s.li.offsetWidth / 2;
-      var t = Math.max(-1, Math.min(1, ((c - ac) / half) / TURN_SPAN));
+      var t = Math.max(-1, Math.min(1, (c - ac) / span));
       s.turn = t * TURN_MAX;
       if (!s.angle && !s.vel) paint(s);
     }
